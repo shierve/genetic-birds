@@ -4,26 +4,13 @@ import fs = require("fs");
 import Plotter = require("./plot");
 import { Network } from "./network";
 
-const STRUCT = [4, 6, 1];
+const STRUCT = [4, 8, 1];
 
-const xorFitness = (s: Solution): number => {
-    const nn = new Network([2, 4, 1], s);
-    let totalError = 0;
-    const res1 = nn.feedForward([0, 0])[0];
-    // console.log("res", res1);
-    totalError += res1;
-    const res2 = nn.feedForward([0, 1])[0];
-    totalError += 1 - res2;
-    const res3 = nn.feedForward([1, 0])[0];
-    totalError += 1 - res3;
-    const res4 = nn.feedForward([1, 1])[0];
-    totalError += res4;
-    return 1 - totalError;
-};
+let targets = Array.from({length: 100}, () => Math.random());
 
 const flappyFitness = (s: Solution): number => {
     const nn = new Network(STRUCT, s);
-    const targets = Array.from({length: 50}, () => Math.random());
+    // const targets = Array.from({length: 100}, () => Math.random());
     const game = new FlappyBirds(nn, targets);
     return game.play();
 };
@@ -33,6 +20,9 @@ const now = new Date();
 const generations = async (pop: Population, g: number) => {
     const winners = [];
     for (let i = 0; i < g; i += 1) {
+        if (i % 5 === 0) {
+            targets = Array.from({length: 100}, () => Math.random());
+        }
         fs.writeFile("./out/temp/" + now.toISOString() + "-gen" + i.toString() + ".json", JSON.stringify(pop.solutions),
             (e) => {
                 return;
@@ -63,9 +53,9 @@ const structureLength = (s: number[]) => {
 
 console.log("solution length: ", structureLength(STRUCT));
 
-const p = new Population(500, structureLength(STRUCT), flappyFitness);
+const p = new Population(200, structureLength(STRUCT), flappyFitness);
 
-generations(p, 25)
+generations(p, 150)
 .then((winners) => {
     const winner = winners[winners.length - 1][0];
     // const nn = new Network([3, 4, 1], winner);
@@ -73,6 +63,21 @@ generations(p, 25)
     const population = p.solutions;
     fs.writeFileSync("./out/population.json", JSON.stringify(p.solutions));
 });
+
+const xorFitness = (s: Solution): number => {
+    const nn = new Network([2, 4, 1], s);
+    let totalError = 0;
+    const res1 = nn.feedForward([0, 0])[0];
+    // console.log("res", res1);
+    totalError += res1;
+    const res2 = nn.feedForward([0, 1])[0];
+    totalError += 1 - res2;
+    const res3 = nn.feedForward([1, 0])[0];
+    totalError += 1 - res3;
+    const res4 = nn.feedForward([1, 1])[0];
+    totalError += res4;
+    return 1 - totalError;
+};
 
 // const p = new Population(100, 19, xorFitness);
 

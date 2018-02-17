@@ -5,7 +5,7 @@ const crossover = (w1: Solution, w2: Solution): Solution => {
     const randomBool = () => Math.random() < 0.5;
     const randomMutation = Math.random() < (1 / 2);
     const newWeights = w1.map((w, i) => {
-        if (randomMutation) {
+        if (randomMutation || w1 === w2) {
             const picker = Math.random() < (2 / w1.length);
             if (picker) {
                 return Math.random();
@@ -59,7 +59,7 @@ class Population {
     public solutions: Solution[];
     public fitnessFunction: (s: Solution) => number;
 
-    public SURVIVORS = 4;
+    public SURVIVORS = 3;
 
     public constructor(size: number, solutionLength: number, fitnessFunction: (s: Solution) => number) {
         this.size = size;

@@ -20,7 +20,7 @@ const indexes = Object.keys(populationObj);
 const population = indexes.map((i) => populationObj[i]).reverse();
 const N_PLAYERS = population.length;
 const networks = population.map((p: number[]) => {
-    return new Network([4, 6, 1], p);
+    return new Network([4, 8, 1], p);
 });
 // const player = new Network([3, 4, 1], population[0]);
 const players = networks.map((n) => new FlappyBirds(n, targets));
