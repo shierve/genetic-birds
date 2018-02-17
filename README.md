@@ -1,6 +1,6 @@
 # Genetic evolution for flappy birds
 
-This projects trains neural networks to play a variant of flappy birds.
+This project trains neural networks to play a variant of flappy birds.
 
 To execute:
 
