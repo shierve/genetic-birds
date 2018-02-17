@@ -3,10 +3,20 @@ type Solution = number[];
 // Generates a crossover solution from two solutions, has random change for mutation
 const crossover = (w1: Solution, w2: Solution): Solution => {
     const randomBool = () => Math.random() < 0.5;
+    const randomMutation = Math.random() < (1 / 2);
     const newWeights = w1.map((w, i) => {
-        const randomMutation = Math.random() < (1 / (w1.length * 2));
         if (randomMutation) {
-            return Math.random();
+            const picker = Math.random() < (2 / w1.length);
+            if (picker) {
+                return Math.random();
+            } else {
+                const picker2 = randomBool();
+                if (picker2) {
+                    return w;
+                } else {
+                    return w2[i];
+                }
+            }
         } else {
             const picker = randomBool();
             if (picker) {
@@ -29,12 +39,11 @@ const shuffle = (a: Solution[]) => {
 
 const reproduce = (survivors: Solution[], length: number): Solution[] => {
     const offspring = [];
-    for (let i = 0; i < (length - (length / 20) - 1); i += 1) {
+    for (let i = 0; i < (length - 1); i += 1) {
         shuffle(survivors);
         offspring.push(crossover(survivors[0], survivors[1]));
     }
-    const randomSolutions = Array.from({length: length / 20}, () => randomSolution(survivors[0].length));
-    return [survivors[0]].concat(randomSolutions.concat(offspring));
+    return [survivors[0]].concat(offspring);
 };
 
 const randomSolution = (length: number): Solution => {

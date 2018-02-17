@@ -4,6 +4,8 @@ import fs = require("fs");
 import Plotter = require("./plot");
 import { Network } from "./network";
 
+const STRUCT = [4, 6, 1];
+
 const xorFitness = (s: Solution): number => {
     const nn = new Network([2, 4, 1], s);
     let totalError = 0;
@@ -20,16 +22,29 @@ const xorFitness = (s: Solution): number => {
 };
 
 const flappyFitness = (s: Solution): number => {
-    const nn = new Network([3, 6, 1], s);
+    const nn = new Network(STRUCT, s);
     const targets = Array.from({length: 50}, () => Math.random());
     const game = new FlappyBirds(nn, targets);
     return game.play();
 };
 
+const now = new Date();
+
 const generations = async (pop: Population, g: number) => {
     const winners = [];
     for (let i = 0; i < g; i += 1) {
+        fs.writeFile("./out/temp/" + now.toISOString() + "-gen" + i.toString() + ".json", JSON.stringify(pop.solutions),
+            (e) => {
+                return;
+            });
         winners.push(await pop.nextGeneration());
+        Plotter({
+            data: {
+                average: pop.averageFitnesses,
+                max: pop.maxFitnesses,
+            },
+            filename: "plot.png",
+        });
     }
     return winners;
 };
@@ -46,22 +61,17 @@ const structureLength = (s: number[]) => {
         .reduce((acc, v) => acc + v, 0);
 };
 
-const p = new Population(500, structureLength([3, 6, 1]), flappyFitness);
+console.log("solution length: ", structureLength(STRUCT));
 
-generations(p, 30)
+const p = new Population(500, structureLength(STRUCT), flappyFitness);
+
+generations(p, 25)
 .then((winners) => {
     const winner = winners[winners.length - 1][0];
     // const nn = new Network([3, 4, 1], winner);
     // console.log("winner", winner);
     const population = p.solutions;
     fs.writeFileSync("./out/population.json", JSON.stringify(p.solutions));
-    Plotter({
-        data: {
-            average: p.averageFitnesses,
-            max: p.maxFitnesses,
-        },
-        filename: "plot.png",
-    });
 });
 
 // const p = new Population(100, 19, xorFitness);

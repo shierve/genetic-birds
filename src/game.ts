@@ -1,5 +1,9 @@
 import { Network } from "./network";
 
+const sigmoid = (x: number): number => {
+    return Math.exp(x) / (Math.exp(x) + 1);
+};
+
 const rectangleCollision =
   (x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) => {
     const hw1 = w1 / 2;
@@ -50,20 +54,14 @@ class FlappyBirds {
         const state = [];
         const targetPositions = this.targets
             .map( (t: number, i: number) => [i, ((1 + i) * 0.5 * this.X) - (this.turn * 5)] );
-        const nextTarget = targetPositions.find( (t) => t[1] > 0.02 * this.X );
+        const nextTarget = targetPositions.find( (t) => (t[1] + (this.TARGET_SIZE / 2)) > 0.02 * this.X );
         if (!nextTarget) {
             return [];
         }
         state.push(this.targets[nextTarget[0]]);
         state.push(nextTarget[1] / this.X);
-        let nextHeight = this.player.position + this.player.velocity;
-        if (nextHeight > this.Y) {
-            nextHeight = this.Y;
-        }
-        if (nextHeight < 0) {
-            nextHeight = 0;
-        }
-        state.push(nextHeight / this.Y);
+        state.push(this.player.position / this.Y);
+        state.push(sigmoid(this.player.velocity));
         return state;
     }
 
@@ -89,7 +87,7 @@ class FlappyBirds {
         }
         const targetPositions = this.targets
             .map( (t: number, i: number) => [i, ((1 + i) * 0.5 * this.X) - (this.turn * 5)] );
-        const nextTarget = targetPositions.find( (t) => t[1] > 0.02 * this.X );
+        const nextTarget = targetPositions.find( (t) => (t[1] + (this.TARGET_SIZE / 2)) > 0.02 * this.X );
         if (nextTarget && !this.targetsHit[nextTarget[0]]) {
             const movementRectangle = [(0.02 * this.X), (this.player.position + prevPosition) / 2,
                 this.PLAYER_SIZE, this.PLAYER_SIZE + Math.abs(this.player.position - prevPosition)];
