@@ -1,0 +1,28 @@
+{
+  "name": "genetic-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp scripts && cp ./src/plot.js ./dist/plot.js",
+    "train": "node dist/train.js",
+    "watch": "budo dist/watch-game.js --live --open"
+  },
+  "author": "shierve",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^9.4.6",
+    "typescript": "^2.7.1"
+  },
+  "dependencies": {
+    "@types/synaptic": "^1.0.3",
+    "budo": "^11.1.4",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^4.0.1",
+    "plotter": "^0.5.0",
+    "synaptic": "^1.1.4",
+    "tslint": "^5.9.1",
+    "watchify": "^3.10.0"
+  }
+}
